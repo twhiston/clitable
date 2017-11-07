@@ -6,14 +6,21 @@ import (
 	"fmt"
 )
 
-
 type colSize map[int]int
 type row []string
 
 // Table represents the table to be printed
 type Table struct {
-	cs colSize
+	cs   colSize
 	rows []row
+	Fmt  TableFormat
+}
+
+type TableFormat struct {
+	Corner string
+	Row    string
+	Column string
+	Value  string
 }
 
 func (c colSize) setIfBigger(k, v int) {
@@ -27,6 +34,10 @@ func (c colSize) setIfBigger(k, v int) {
 func New() *Table {
 	t := new(Table)
 	t.cs = make(colSize)
+	t.Fmt.Corner = "+"
+	t.Fmt.Row = "-"
+	t.Fmt.Column = "|"
+	t.Fmt.Value = " "
 	return t
 }
 
@@ -54,7 +65,7 @@ func (t *Table) Errprint() {
 // Fprint prints the table to any io.Writer of your choice
 func (t *Table) Fprint(w io.Writer) {
 	t.printEmpty(w)
-	for _, row := range t.rows{
+	for _, row := range t.rows {
 		t.printRow(row, w)
 		t.printEmpty(w)
 	}
@@ -63,21 +74,21 @@ func (t *Table) Fprint(w io.Writer) {
 func (t *Table) printRow(row row, w io.Writer) {
 	for k, col := range row {
 		c := string(col)
-		fmt.Fprint(w, "|", pad(c+"", t.cs[k]+1, ' '))
+		fmt.Fprint(w, t.Fmt.Column, pad(c+"", t.cs[k]+1, t.Fmt.Value))
 	}
-	fmt.Fprintf(w, "|\n")
+	fmt.Fprintf(w, t.Fmt.Column+"\n")
 }
 
 func (t *Table) printEmpty(w io.Writer) {
 	for i := 0; i < len(t.cs); i ++ {
-		fmt.Fprint(w, "+"+pad("", t.cs[i]+1, '-'))
+		fmt.Fprint(w, t.Fmt.Corner+pad("", t.cs[i]+1, t.Fmt.Row))
 	}
-	fmt.Fprintf(w, "+\n")
+	fmt.Fprintf(w, t.Fmt.Corner+"\n")
 }
 
-func pad(str string, dlen int, padchar rune) string {
+func pad(str string, dlen int, padchar string) string {
 	if len(str) < dlen {
-		diff := dlen- len(str)
+		diff := dlen - len(str)
 		app := str
 		for i := 0; i < diff; i++ {
 			app += string(padchar)
