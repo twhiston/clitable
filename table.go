@@ -15,10 +15,9 @@ type Table struct {
 	maximumColumns int
 	rows           []row
 	Fmt            TableFormat
-	Writer         io.Writer
-	ErrWriter      io.Writer
 }
 
+//TableFormat describes the characters that will be used when rendering the table
 type TableFormat struct {
 	Corner string
 	Row    string
@@ -43,8 +42,6 @@ func New() *Table {
 	t.Fmt.Column = "| "
 	t.Fmt.Pad = " "
 	t.Fmt.Blank = " "
-	t.Writer = os.Stdout
-	t.ErrWriter = os.Stderr
 	return t
 }
 
@@ -60,20 +57,20 @@ func (t *Table) AddRow(cols ...string) *Table {
 	t.rows = append(t.rows, r)
 
 	if colCount < t.maximumColumns {
-		t.ColumnPadding()
+		t.columnPadding()
 	} else if colCount > t.maximumColumns {
 		t.maximumColumns = colCount
-		t.ColumnPadding()
+		t.columnPadding()
 	}
 	return t
 }
 
-func (t *Table) ColumnPadding() {
+func (t *Table) columnPadding() {
 	for k, v := range t.rows {
 		colCount := len(v)
 		for colCount < t.maximumColumns {
 			v = append(v, t.Fmt.Blank)
-			colCount += 1
+			colCount++
 		}
 		t.rows[k] = v
 	}
@@ -81,34 +78,34 @@ func (t *Table) ColumnPadding() {
 
 // Print prints the table to standard output
 func (t *Table) Print() {
-	t.Fprint(t.Writer)
+	t.Fprint(os.Stdout)
 }
 
 // Errprint prints the table to error output
 func (t *Table) Errprint() {
-	t.Fprint(t.ErrWriter)
+	t.Fprint(os.Stderr)
 }
 
 // Fprint prints the table to any io.Writer of your choice
 func (t *Table) Fprint(w io.Writer) {
-	t.printEmpty(w)
+	t.printDivider(w)
 	for _, row := range t.rows {
 		t.printRow(row, w)
-		t.printEmpty(w)
+		t.printDivider(w)
 	}
 }
 
 func (t *Table) printRow(row row, w io.Writer) {
 	colCount := 0
 	for k, col := range row {
-		c := string(col)
-		fmt.Fprint(w, t.Fmt.Column, pad(c+"", t.columnSizes[k]+len(t.Fmt.Corner), t.Fmt.Pad))
-		colCount += 1
+		c := col
+		fmt.Fprint(w, t.Fmt.Column, pad(c, t.columnSizes[k]+len(t.Fmt.Corner), t.Fmt.Pad))
+		colCount++
 	}
 	fmt.Fprintf(w, t.Fmt.Column+"\n")
 }
 
-func (t *Table) printEmpty(w io.Writer) {
+func (t *Table) printDivider(w io.Writer) {
 	for i := 0; i < len(t.columnSizes); i ++ {
 		fmt.Fprint(w, t.Fmt.Corner+pad("", t.columnSizes[i]+len(t.Fmt.Column), t.Fmt.Row))
 	}
@@ -120,7 +117,7 @@ func pad(str string, dlen int, padchar string) string {
 		diff := dlen - len(str)
 		app := str
 		for i := 0; i < diff; i++ {
-			app += string(padchar)
+			app += padchar
 		}
 		return app
 	}

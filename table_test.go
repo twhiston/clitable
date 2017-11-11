@@ -2,7 +2,6 @@ package clitable
 
 import (
 	"testing"
-	"bytes"
 )
 
 func TestTable(t *testing.T) {
@@ -25,26 +24,15 @@ func TestTable(t *testing.T) {
 	if table.columnSizes[0] != 3 || table.columnSizes[1] != 3 || table.columnSizes[2] != 13 {
 		t.Error("re-Counting error")
 	}
-}
 
-func TestTableOther(t *testing.T) {
+	if table.maximumColumns != 3 {
+		t.Error("maximum columns error")
+	}
 
-	table := New()
-	table.AddRow("One", "Two", "Three")
-	table.AddRow("xxxxxxx", "rr")
-	table.AddRow("a", "b", "c", "d", "e")
+	table.AddRow("1", "2", "3", "4", "5", "6")
 
-	expectedOutput := `+---------+-----+-------------------+
-| One     | Two | Three             |
-+---------+-----+-------------------+
-| xxxxxxx | rr  | Thrffffffffffffee |
-+---------+-----+-------------------+
-`
-
-	buffer := new(bytes.Buffer)
-	table.Writer = buffer
-	table.Print()
-	if buffer.String() != expectedOutput {
-		t.Fatal("incorrect output.\nExpected:\n", expectedOutput, "\nActual:\n", buffer.String())
+	if table.maximumColumns != 6 {
+		t.Error("maximum columns error")
 	}
 }
+
