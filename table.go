@@ -102,7 +102,7 @@ func (t *Table) printRow(row row, w io.Writer) {
 	colCount := 0
 	for k, col := range row {
 		c := string(col)
-		fmt.Fprint(w, t.Fmt.Column, pad(c+"", t.columnSizes[k]+1, t.Fmt.Pad))
+		fmt.Fprint(w, t.Fmt.Column, pad(c+"", t.columnSizes[k]+len(t.Fmt.Corner), t.Fmt.Pad))
 		colCount += 1
 	}
 	fmt.Fprintf(w, t.Fmt.Column+"\n")

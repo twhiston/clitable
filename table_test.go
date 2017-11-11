@@ -30,7 +30,6 @@ func TestTable(t *testing.T) {
 func TestTableOther(t *testing.T) {
 
 	table := New()
-	//table.Fmt.Corner = "DICK"
 	table.AddRow("One", "Two", "Three")
 	table.AddRow("xxxxxxx", "rr")
 	table.AddRow("a", "b", "c", "d", "e")
