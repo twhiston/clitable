@@ -1,0 +1,5 @@
+pipeline:
+  build:
+    image: tomwhiston/micro-golang:drone
+    commands:
+      - cd tests && /go/scripts/test.sh
