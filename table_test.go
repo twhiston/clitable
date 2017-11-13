@@ -5,6 +5,7 @@ import (
 	"github.com/Pallinder/go-randomdata"
 )
 
+//nolint
 func TestTable(t *testing.T) {
 	table := New()
 	if len(table.columnSizes) != 0 {

@@ -118,15 +118,14 @@ func pad(str string, dlen int, padchar string) string {
 	}
 	inputLength := len(str)
 	if inputLength < dlen {
-		app := str
 		i := inputLength
 		for ;i < dlen; {
-			app += padchar
+			str += padchar
 			i += len(padchar)
 		}
 		// Ensure correct length if pad is larger that 1 character
-		app = app[:dlen]
-		return app
+		str = str[:dlen]
+		return str
 	}
 	return str
 }
