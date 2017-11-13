@@ -27,8 +27,8 @@ type TableFormat struct {
 }
 
 func (c colSize) setIfBigger(k, v int) {
-	cv, e := c[k]
-	if (e && cv < v) || !e {
+	current, exists := c[k]
+	if (exists && current < v) || !exists {
 		c[k] = v
 	}
 }
@@ -113,12 +113,19 @@ func (t *Table) printDivider(w io.Writer) {
 }
 
 func pad(str string, dlen int, padchar string) string {
-	if len(str) < dlen {
-		diff := dlen - len(str)
+	if padchar == "" {
+		panic("pad character cannot be null")
+	}
+	inputLength := len(str)
+	if inputLength < dlen {
 		app := str
-		for i := 0; i < diff; i++ {
+		i := inputLength
+		for ;i < dlen; {
 			app += padchar
+			i += len(padchar)
 		}
+		// Ensure correct length if pad is larger that 1 character
+		app = app[:dlen]
 		return app
 	}
 	return str
